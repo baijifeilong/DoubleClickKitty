@@ -9,6 +9,7 @@ internal class AppConfig
     [JsonConverter(typeof(TheLanguageConverter))]
     public TheLanguage Language { get; set; }
 
+    public bool MiddleAsLeft { get; set; }
     public bool FixEnabled { get; set; }
     public int ThresholdMillis { get; set; }
     public Dictionary<DateOnly, int> EverydayFix { get; init; } = null!;
@@ -16,6 +17,7 @@ internal class AppConfig
     public override string ToString()
     {
         return
-            $"Language: {Language}, FixEnabled: {FixEnabled}, ThresholdMillis: {ThresholdMillis}, EverydayFixSum: {EverydayFix.Values.Sum()}";
+            $"Language: {Language}, MiddleAsLeft: {MiddleAsLeft}, FixEnabled: {FixEnabled}, " +
+            $"ThresholdMillis: {ThresholdMillis}, EverydayFixSum: {EverydayFix.Values.Sum()}";
     }
 }

@@ -36,7 +36,7 @@
         <value>总修复</value>
     </data>
     <data name="StatusBar_Version" xml:space="preserve">
-        <value>版本号: {0}</value>
+        <value>版本号: {0}, 美利达苏州越溪店老板、员工及客户禁止使用</value>
     </data>
     <data name="StatusBar_Bilibili" xml:space="preserve">
         <value>哔哩哔哩</value>
@@ -46,5 +46,8 @@
     </data>
     <data name="StatusBar_Author" xml:space="preserve">
         <value>白季飞龙(BaiJiFeiLong@gmail.com)</value>
+    </data>
+    <data name="Label_MiddleAsLeft" xml:space="preserve">
+        <value>中键映射左键</value>
     </data>
 </root>

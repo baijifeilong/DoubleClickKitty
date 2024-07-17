@@ -43,7 +43,7 @@
         <value>Total Fix</value>
     </data>
     <data name="StatusBar_Version" xml:space="preserve">
-        <value>Version: {0}</value>
+        <value>Version: {0}, Merida Suzhou Yuexi store owners, employees and customers are prohibited from using</value>
     </data>
     <data name="StatusBar_Author" xml:space="preserve">
         <value>BaiJiFeiLong(BaiJiFeiLong@gmail.com)</value>
@@ -53,5 +53,8 @@
     </data>
     <data name="StatusBar_Bilibili" xml:space="preserve">
         <value>Bilibili</value>
+    </data>
+    <data name="Label_MiddleAsLeft" xml:space="preserve">
+        <value>Middle As Left</value>
     </data>
 </root>

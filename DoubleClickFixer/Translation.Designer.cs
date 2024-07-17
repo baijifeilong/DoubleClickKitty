@@ -78,6 +78,15 @@ namespace DoubleClickFixer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Middle As Left.
+        /// </summary>
+        internal static string Label_MiddleAsLeft {
+            get {
+                return ResourceManager.GetString("Label_MiddleAsLeft", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Threshold: {0:000} ms.
         /// </summary>
         internal static string Label_Threshold {
@@ -150,7 +159,7 @@ namespace DoubleClickFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Version: {0}.
+        ///   Looks up a localized string similar to Version: {0}, Merida Suzhou Yuexi store owners, employees and customers are prohibited from using.
         /// </summary>
         internal static string StatusBar_Version {
             get {

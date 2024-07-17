@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using NLog;
 using NLog.Config;
@@ -44,6 +45,18 @@ internal class App
     {
         _logger.Info("Setting fix enabled: {0}", value);
         _appConfig.FixEnabled = value;
+        PersistConfig();
+    }
+
+    public bool GetMiddleAsLeft()
+    {
+        return _appConfig.MiddleAsLeft;
+    }
+
+    public void SetMiddleAsLeft(bool value)
+    {
+        _logger.Info($"Setting middle as left: {value}");
+        _appConfig.MiddleAsLeft = value;
         PersistConfig();
     }
 
@@ -105,7 +118,7 @@ internal class App
             ? JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(_configFileInfo.FullName))!
             : new AppConfig
             {
-                Language = TheLanguage.EnUs, FixEnabled = true,
+                Language = TheLanguage.EnUs, FixEnabled = true, MiddleAsLeft = false,
                 ThresholdMillis = GetDefaultThresholdMillis(), EverydayFix = new Dictionary<DateOnly, int>()
             };
         _logger.Info("Current config: {0}", _appConfig);
@@ -183,6 +196,26 @@ internal class App
                 _ignoring = false;
                 return 1;
             }
+        }
+        else if (wParam == (int)User32.WindowMessage.WM_MBUTTONDOWN && _appConfig.MiddleAsLeft)
+        {
+            Task.Run(() =>
+            {
+                var input = new User32.INPUT { type = User32.InputType.INPUT_MOUSE };
+                input.Inputs.mi.dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTDOWN;
+                User32.SendInput(1, new[] { input }, Marshal.SizeOf<User32.INPUT>());
+            });
+            return 1;
+        }
+        else if (wParam == (int)User32.WindowMessage.WM_MBUTTONUP && _appConfig.MiddleAsLeft)
+        {
+            Task.Run(() =>
+            {
+                var input = new User32.INPUT { type = User32.InputType.INPUT_MOUSE };
+                input.Inputs.mi.dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTUP;
+                User32.SendInput(1, new[] { input }, Marshal.SizeOf<User32.INPUT>());
+            });
+            return 1;
         }
 
         return User32.CallNextHookEx(0, nCode, wParam, lParam);

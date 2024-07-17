@@ -22,10 +22,11 @@ internal sealed class MainForm : Form
     private readonly Label _totalFixTitleLabel;
     private readonly Label _todayFixTitleLabel;
     private readonly ComboBox _languageComboBox;
-    private ToolStripLabel _versionToolStripLabel;
-    private ToolStripLabel _authorToolStripLabel;
-    private ToolStripButton _githubButton;
-    private ToolStripButton _bilibiliButton;
+    private readonly ToolStripLabel _versionToolStripLabel;
+    private readonly ToolStripLabel _authorToolStripLabel;
+    private readonly ToolStripButton _githubButton;
+    private readonly ToolStripButton _bilibiliButton;
+    private CheckBox _middleAsLeftCheckBox;
 
     public MainForm()
     {
@@ -33,6 +34,7 @@ internal sealed class MainForm : Form
 
         var topPanel = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
         topPanel.Margin = new Padding(5, 10, 5, 0);
+        topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
@@ -60,6 +62,10 @@ internal sealed class MainForm : Form
         _thresholdTrackBar.ValueChanged += OnThresholdTrackBarOnValueChanged;
         _resetButton = new Button { AutoSize = false, Dock = DockStyle.Fill };
         _resetButton.Click += OnResetButtonOnClick;
+        _middleAsLeftCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill };
+        _middleAsLeftCheckBox.Margin = new Padding(30, 0, 0, 0);
+        _middleAsLeftCheckBox.Checked = _app.GetMiddleAsLeft();
+        _middleAsLeftCheckBox.CheckedChanged += (_, _) => { _app.SetMiddleAsLeft(_middleAsLeftCheckBox.Checked); };
         _languageComboBox = new ComboBox
             { AutoSize = true, Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
         foreach (var _ in App.GetSupportedLanguages())
@@ -79,6 +85,7 @@ internal sealed class MainForm : Form
         topPanel.Controls.Add(_thresholdLabel);
         topPanel.Controls.Add(_thresholdTrackBar);
         topPanel.Controls.Add(_resetButton);
+        topPanel.Controls.Add(_middleAsLeftCheckBox);
         topPanel.Controls.Add(new Control());
         topPanel.Controls.Add(_languageComboBox);
 
@@ -142,7 +149,7 @@ internal sealed class MainForm : Form
             rightPanel.RowStyles.Add(new RowStyle { SizeType = SizeType.Percent, Height = 100 });
         }
 
-        var leftPanel = new TableLayoutPanel() { AutoSize = true, Dock = DockStyle.Fill };
+        var leftPanel = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
         leftPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 30));
         leftPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 70));
         leftPanel.Controls.Add(todayFixPanel);
@@ -231,6 +238,7 @@ internal sealed class MainForm : Form
         _thresholdLabel.Text = string.Format(Translation.Label_Threshold, thresholdMillis);
         _fixEnabledCheckBox.Text = Translation.Label_FixEnabled;
         _resetButton.Text = Translation.Button_Reset;
+        _middleAsLeftCheckBox.Text = Translation.Label_MiddleAsLeft;
         _todayFixTitleLabel.Text = Translation.Label_TodayFix;
         _totalFixTitleLabel.Text = Translation.Label_TotalFix;
         var languages = App.GetSupportedLanguages();
