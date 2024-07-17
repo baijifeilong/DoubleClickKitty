@@ -10,7 +10,7 @@ using NLog.Config;
 using NLog.Targets;
 using PInvoke;
 
-namespace DoubleClickFixer;
+namespace DoubleClickKitty;
 
 internal class App
 {

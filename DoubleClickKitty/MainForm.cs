@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 using NLog;
 
-namespace DoubleClickFixer;
+namespace DoubleClickKitty;
 
 internal sealed class MainForm : Form
 {
@@ -26,7 +26,7 @@ internal sealed class MainForm : Form
     private readonly ToolStripLabel _authorToolStripLabel;
     private readonly ToolStripButton _githubButton;
     private readonly ToolStripButton _bilibiliButton;
-    private CheckBox _middleAsLeftCheckBox;
+    private readonly CheckBox _middleAsLeftCheckBox;
 
     public MainForm()
     {
@@ -98,7 +98,7 @@ internal sealed class MainForm : Form
         {
             AutoSize = true, Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font("Arial", 16),
+            Font = new Font("Microsoft Yahei", 16),
             Margin = new Padding(10),
             ForeColor = Color.DimGray
         };
@@ -124,7 +124,7 @@ internal sealed class MainForm : Form
         {
             AutoSize = true, Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font("Arial", 32),
+            Font = new Font("Microsoft Yahei", 32),
             Margin = new Padding(20),
             ForeColor = Color.DimGray
         };

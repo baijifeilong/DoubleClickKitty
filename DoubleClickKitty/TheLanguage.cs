@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Humanizer;
 
-namespace DoubleClickFixer;
+namespace DoubleClickKitty;
 
 public enum TheLanguage
 {

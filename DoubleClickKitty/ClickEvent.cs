@@ -1,6 +1,6 @@
 ﻿// Created By BaiJiFeiLong@gmail.com at 2024-07-17 13:29:48+0800
 
-namespace DoubleClickFixer;
+namespace DoubleClickKitty;
 
 internal class ClickEvent
 {

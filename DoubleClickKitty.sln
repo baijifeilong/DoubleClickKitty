@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoubleClickFixer", "DoubleClickFixer\DoubleClickFixer.csproj", "{7A46FA4D-F78E-4CF1-AB87-DF4012B2DD44}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoubleClickKitty", "DoubleClickKitty\DoubleClickKitty.csproj", "{7A46FA4D-F78E-4CF1-AB87-DF4012B2DD44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

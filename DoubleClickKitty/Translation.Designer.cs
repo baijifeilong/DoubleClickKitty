@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DoubleClickFixer {
+namespace DoubleClickKitty {
     using System;
     
     
@@ -38,7 +38,7 @@ namespace DoubleClickFixer {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DoubleClickFixer.Translation", typeof(Translation).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DoubleClickKitty.Translation", typeof(Translation).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -168,7 +168,7 @@ namespace DoubleClickFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Double Click Fixer.
+        ///   Looks up a localized string similar to Double Click Kitty.
         /// </summary>
         internal static string Title_Application {
             get {

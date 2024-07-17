@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace DoubleClickFixer;
+namespace DoubleClickKitty;
 
 internal class AppConfig
 {
