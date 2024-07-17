@@ -28,7 +28,7 @@
         <value>Enable Fix</value>
     </data>
     <data name="Label_Threshold" xml:space="preserve">
-        <value>Threshold: {0} ms</value>
+        <value>Threshold: {0:000} ms</value>
     </data>
     <data name="Title_Application" xml:space="preserve">
         <value>Double Click Fixer</value>
@@ -41,5 +41,17 @@
     </data>
     <data name="Label_TotalFix" xml:space="preserve">
         <value>Total Fix</value>
+    </data>
+    <data name="StatusBar_Version" xml:space="preserve">
+        <value>Version: {0}</value>
+    </data>
+    <data name="StatusBar_Author" xml:space="preserve">
+        <value>BaiJiFeiLong(BaiJiFeiLong@gmail.com)</value>
+    </data>
+    <data name="StatusBar_Github" xml:space="preserve">
+        <value>Github</value>
+    </data>
+    <data name="StatusBar_Bilibili" xml:space="preserve">
+        <value>Bilibili</value>
     </data>
 </root>

@@ -78,7 +78,7 @@ namespace DoubleClickFixer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Threshold: {0} ms.
+        ///   Looks up a localized string similar to Threshold: {0:000} ms.
         /// </summary>
         internal static string Label_Threshold {
             get {
@@ -119,6 +119,42 @@ namespace DoubleClickFixer {
         internal static string Language_English {
             get {
                 return ResourceManager.GetString("Language_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BaiJiFeiLong(BaiJiFeiLong@gmail.com).
+        /// </summary>
+        internal static string StatusBar_Author {
+            get {
+                return ResourceManager.GetString("StatusBar_Author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bilibili.
+        /// </summary>
+        internal static string StatusBar_Bilibili {
+            get {
+                return ResourceManager.GetString("StatusBar_Bilibili", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Github.
+        /// </summary>
+        internal static string StatusBar_Github {
+            get {
+                return ResourceManager.GetString("StatusBar_Github", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version: {0}.
+        /// </summary>
+        internal static string StatusBar_Version {
+            get {
+                return ResourceManager.GetString("StatusBar_Version", resourceCulture);
             }
         }
         

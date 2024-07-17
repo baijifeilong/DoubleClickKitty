@@ -21,7 +21,7 @@
         <value>启用修复</value>
     </data>
     <data name="Label_Threshold" xml:space="preserve">
-        <value>双击阈值: {0}ms</value>
+        <value>阈值: {0:000}ms</value>
     </data>
     <data name="Title_Application" xml:space="preserve">
         <value>双击修复</value>
@@ -34,5 +34,17 @@
     </data>
     <data name="Label_TotalFix" xml:space="preserve">
         <value>总修复</value>
+    </data>
+    <data name="StatusBar_Version" xml:space="preserve">
+        <value>版本号: {0}</value>
+    </data>
+    <data name="StatusBar_Bilibili" xml:space="preserve">
+        <value>哔哩哔哩</value>
+    </data>
+    <data name="StatusBar_Github" xml:space="preserve">
+        <value>饭桶集中营</value>
+    </data>
+    <data name="StatusBar_Author" xml:space="preserve">
+        <value>白季飞龙(BaiJiFeiLong@gmail.com)</value>
     </data>
 </root>

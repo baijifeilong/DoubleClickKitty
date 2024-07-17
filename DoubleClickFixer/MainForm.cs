@@ -1,5 +1,7 @@
 // Created By BaiJiFeiLong@gmail.com at 2024-07-16 16:58:57+0800
 
+using System.Diagnostics;
+using System.Reflection;
 using NLog;
 
 namespace DoubleClickFixer;
@@ -20,6 +22,10 @@ internal sealed class MainForm : Form
     private readonly Label _totalFixTitleLabel;
     private readonly Label _todayFixTitleLabel;
     private readonly ComboBox _languageComboBox;
+    private ToolStripLabel _versionToolStripLabel;
+    private ToolStripLabel _authorToolStripLabel;
+    private ToolStripButton _githubButton;
+    private ToolStripButton _bilibiliButton;
 
     public MainForm()
     {
@@ -40,8 +46,7 @@ internal sealed class MainForm : Form
         _thresholdLabel = new Label
         {
             AutoSize = true, Dock = DockStyle.Fill,
-            MinimumSize = new Size(150, 0),
-            BorderStyle = BorderStyle.None, TextAlign = ContentAlignment.MiddleLeft,
+            BorderStyle = BorderStyle.None, TextAlign = ContentAlignment.MiddleRight,
         };
         _thresholdTrackBar = new TrackBar
         {
@@ -168,6 +173,28 @@ internal sealed class MainForm : Form
         rootPanel.Controls.Add(centerPanel);
         Controls.Add(rootPanel);
 
+        var statusStrip = new StatusStrip();
+        statusStrip.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
+        _versionToolStripLabel = new ToolStripLabel { Alignment = ToolStripItemAlignment.Left };
+        statusStrip.Items.Add(_versionToolStripLabel);
+        _authorToolStripLabel = new ToolStripLabel { Alignment = ToolStripItemAlignment.Right };
+        statusStrip.Items.Add(_authorToolStripLabel);
+        _githubButton = new ToolStripButton { Alignment = ToolStripItemAlignment.Right };
+        _githubButton.Click += delegate
+        {
+            Process.Start(new ProcessStartInfo("https://github.com/baijifeilong/SpireTimeMachine")
+                { UseShellExecute = true });
+        };
+        statusStrip.Items.Add(_githubButton);
+        _bilibiliButton = new ToolStripButton { Alignment = ToolStripItemAlignment.Right };
+        _bilibiliButton.Click += delegate
+        {
+            Process.Start(new ProcessStartInfo("https://www.bilibili.com/video/BV1ab421n7YH/")
+                { UseShellExecute = true });
+        };
+        statusStrip.Items.Add(_bilibiliButton);
+        Controls.Add(statusStrip);
+
         ClientSize = new Size(1280, 720);
         CenterToScreen();
 
@@ -192,6 +219,13 @@ internal sealed class MainForm : Form
 
     private void RefreshTranslation()
     {
+        var version = Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+        version = string.Join(".", version.Split(".").Take(3));
+        _versionToolStripLabel.Text = string.Format(Translation.StatusBar_Version, version);
+        _authorToolStripLabel.Text = Translation.StatusBar_Author;
+        _githubButton.Text = Translation.StatusBar_Github;
+        _bilibiliButton.Text = Translation.StatusBar_Bilibili;
+
         Text = Translation.Title_Application;
         var thresholdMillis = _thresholdTrackBar.Value * 10;
         _thresholdLabel.Text = string.Format(Translation.Label_Threshold, thresholdMillis);
