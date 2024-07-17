@@ -15,7 +15,11 @@ internal sealed class MainForm : Form
     private readonly Label _thresholdLabel;
     private readonly TrackBar _thresholdTrackBar;
     private readonly Logger _logger = LogManager.GetLogger(nameof(MainForm));
-    private CheckBox _fixEnabledCheckBox;
+    private readonly CheckBox _fixEnabledCheckBox;
+    private readonly Button _resetButton;
+    private readonly Label _totalFixTitleLabel;
+    private readonly Label _todayFixTitleLabel;
+    private readonly ComboBox _languageComboBox;
 
     public MainForm()
     {
@@ -28,17 +32,15 @@ internal sealed class MainForm : Form
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        topPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         topPanel.ColumnCount = topPanel.ColumnStyles.Count;
-        _fixEnabledCheckBox = new CheckBox
-        {
-            Text = "Enable Fix", AutoSize = true, Dock = DockStyle.Fill
-        };
+        _fixEnabledCheckBox = new CheckBox { AutoSize = true, Dock = DockStyle.Fill };
         _fixEnabledCheckBox.Checked = _app.GetFixEnabled();
         _fixEnabledCheckBox.CheckedChanged += (_, _) => { _app.SetFixEnabled(_fixEnabledCheckBox.Checked); };
         _thresholdLabel = new Label
         {
-            AutoSize = false, Dock = DockStyle.Fill,
-            MinimumSize = new Size(140, 0),
+            AutoSize = true, Dock = DockStyle.Fill,
+            MinimumSize = new Size(150, 0),
             BorderStyle = BorderStyle.None, TextAlign = ContentAlignment.MiddleLeft,
         };
         _thresholdTrackBar = new TrackBar
@@ -51,22 +53,38 @@ internal sealed class MainForm : Form
         _thresholdTrackBar.Height = 30;
         _thresholdTrackBar.Value = _app.GetThresholdMillis() / 10;
         _thresholdTrackBar.ValueChanged += OnThresholdTrackBarOnValueChanged;
-        var resetButton = new Button { Text = "Reset", AutoSize = false, Dock = DockStyle.Fill };
-        resetButton.Click += OnResetButtonOnClick;
+        _resetButton = new Button { AutoSize = false, Dock = DockStyle.Fill };
+        _resetButton.Click += OnResetButtonOnClick;
+        _languageComboBox = new ComboBox
+            { AutoSize = true, Dock = DockStyle.Fill, DropDownStyle = ComboBoxStyle.DropDownList };
+        foreach (var _ in App.GetSupportedLanguages())
+        {
+            _languageComboBox.Items.Add("Placeholder");
+        }
+
+        _languageComboBox.SelectedIndex = App.GetSupportedLanguages().ToList().IndexOf(_app.GetLanguage());
+        _languageComboBox.SelectionChangeCommitted += (_, _) =>
+        {
+            var language = App.GetSupportedLanguages()[_languageComboBox.SelectedIndex];
+            _app.SetLanguage(language);
+            RefreshTranslation();
+        };
+
         topPanel.Controls.Add(_fixEnabledCheckBox);
         topPanel.Controls.Add(_thresholdLabel);
         topPanel.Controls.Add(_thresholdTrackBar);
-        topPanel.Controls.Add(resetButton);
+        topPanel.Controls.Add(_resetButton);
         topPanel.Controls.Add(new Control());
+        topPanel.Controls.Add(_languageComboBox);
 
         var todayFixPanel = new TableLayoutPanel()
         {
             AutoSize = true, Dock = DockStyle.Fill,
             BorderStyle = BorderStyle.FixedSingle
         };
-        var todayFixTitleLabel = new Label
+        _todayFixTitleLabel = new Label
         {
-            AutoSize = true, Dock = DockStyle.Fill, Text = "Today Fix",
+            AutoSize = true, Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Arial", 16),
             Margin = new Padding(10),
@@ -82,7 +100,7 @@ internal sealed class MainForm : Form
         };
         todayFixPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         todayFixPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        todayFixPanel.Controls.Add(todayFixTitleLabel);
+        todayFixPanel.Controls.Add(_todayFixTitleLabel);
         todayFixPanel.Controls.Add(_todayFixValueLabel);
 
         var totalFixPanel = new TableLayoutPanel
@@ -90,12 +108,12 @@ internal sealed class MainForm : Form
             AutoSize = true, Dock = DockStyle.Fill,
             BorderStyle = BorderStyle.FixedSingle
         };
-        var totalClicksTitleLabel = new Label
+        _totalFixTitleLabel = new Label
         {
-            AutoSize = true, Dock = DockStyle.Fill, Text = "Total Fix",
+            AutoSize = true, Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Arial", 32),
-            Margin = new Padding(10),
+            Margin = new Padding(20),
             ForeColor = Color.DimGray
         };
         _totalFixValueLabel = new Label
@@ -108,7 +126,7 @@ internal sealed class MainForm : Form
         };
         totalFixPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         totalFixPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        totalFixPanel.Controls.Add(totalClicksTitleLabel);
+        totalFixPanel.Controls.Add(_totalFixTitleLabel);
         totalFixPanel.Controls.Add(_totalFixValueLabel);
 
         var rightPanel = new TableLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
@@ -135,6 +153,7 @@ internal sealed class MainForm : Form
         _clickLabelFont = new Font("Arial", 32);
         for (var i = 0; i < 20; i++)
         {
+            // ReSharper disable once LocalizableElement
             var label = new Label { Dock = DockStyle.Fill, Text = "+", AutoSize = false, Width = 0 };
             label.Font = _clickLabelFont;
             label.BorderStyle = BorderStyle.FixedSingle;
@@ -149,13 +168,13 @@ internal sealed class MainForm : Form
         rootPanel.Controls.Add(centerPanel);
         Controls.Add(rootPanel);
 
-        Text = "Double Click Fixer";
         ClientSize = new Size(1280, 720);
         CenterToScreen();
 
         _app.ClickEventTriggered += OnAppOnClickEventTriggered;
         RefreshTranslation();
     }
+
 
     private void OnThresholdTrackBarOnValueChanged(object? o, EventArgs eventArgs)
     {
@@ -173,8 +192,18 @@ internal sealed class MainForm : Form
 
     private void RefreshTranslation()
     {
+        Text = Translation.Title_Application;
         var thresholdMillis = _thresholdTrackBar.Value * 10;
-        _thresholdLabel.Text = $"Threshold: {thresholdMillis}ms";
+        _thresholdLabel.Text = string.Format(Translation.Label_Threshold, thresholdMillis);
+        _fixEnabledCheckBox.Text = Translation.Label_FixEnabled;
+        _resetButton.Text = Translation.Button_Reset;
+        _todayFixTitleLabel.Text = Translation.Label_TodayFix;
+        _totalFixTitleLabel.Text = Translation.Label_TotalFix;
+        var languages = App.GetSupportedLanguages();
+        for (var i = 0; i < languages.Length; i++)
+        {
+            _languageComboBox.Items[i] = languages[i].ToTranslation();
+        }
     }
 
     private void OnAppOnClickEventTriggered(object? sender, ClickEvent @event)
@@ -191,11 +220,11 @@ internal sealed class MainForm : Form
             var clickEvent = _clickEventQueue.ElementAt(i);
             var clickLabel = _clickLabels[i];
             var isNewClick = (now - clickEvent.TriggeredAt).TotalMilliseconds <= 500;
-            var isDoubleClick = clickEvent.DelayMillis <= 500;
             var font = _clickLabelFont;
             if (isNewClick) font = new Font(font, FontStyle.Underline);
             clickLabel.Font = font;
-            clickLabel.ForeColor = clickEvent.Accepted ? (isDoubleClick ? Color.Blue : Color.Green) : Color.Red;
+            clickLabel.ForeColor =
+                clickEvent.Accepted ? clickEvent.IsDoubleClick ? Color.Blue : Color.Green : Color.Red;
             clickLabel.Text = Math.Clamp(clickEvent.DelayMillis, 0, 999).ToString();
         }
 

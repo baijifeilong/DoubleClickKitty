@@ -1,6 +1,7 @@
 // Created By BaiJiFeiLong@gmail.com at 2024-07-16 16:47:01+0800
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using NLog;
@@ -9,20 +10,6 @@ using NLog.Targets;
 using PInvoke;
 
 namespace DoubleClickFixer;
-
-internal class ClickEvent
-{
-    public DateTime TriggeredAt { get; init; }
-    public int DelayMillis { get; init; }
-    public bool Accepted { get; init; }
-}
-
-class AppConfig
-{
-    public bool FixEnabled { get; set; }
-    public int ThresholdMillis { get; set; }
-    public Dictionary<DateOnly, int> EverydayFix { get; set; } = null!;
-}
 
 internal class App
 {
@@ -34,6 +21,7 @@ internal class App
     private readonly Logger _logger;
     private readonly AppConfig _appConfig;
     private readonly FileInfo _configFileInfo;
+    private ClickEvent? _lastAcceptedClickEvent;
 
     public int GetThresholdMillis()
     {
@@ -64,6 +52,19 @@ internal class App
         return 120;
     }
 
+    public TheLanguage GetLanguage()
+    {
+        return _appConfig.Language;
+    }
+
+    public void SetLanguage(TheLanguage language)
+    {
+        _logger.Info("Setting language: {0}...", language);
+        _appConfig.Language = language;
+        PersistConfig();
+        Translation.Culture = new CultureInfo(language.ToLanguageCode());
+    }
+
     public int GetTotalFix()
     {
         return _appConfig.EverydayFix.Values.Sum();
@@ -77,6 +78,11 @@ internal class App
     public static App GetApp()
     {
         return _app;
+    }
+
+    public static TheLanguage[] GetSupportedLanguages()
+    {
+        return Enum.GetValues<TheLanguage>();
     }
 
     private App()
@@ -99,10 +105,12 @@ internal class App
             ? JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(_configFileInfo.FullName))!
             : new AppConfig
             {
-                FixEnabled = true,
+                Language = TheLanguage.EnUs, FixEnabled = true,
                 ThresholdMillis = GetDefaultThresholdMillis(), EverydayFix = new Dictionary<DateOnly, int>()
             };
+        _logger.Info("Current config: {0}", _appConfig);
         if (_configFileInfo.Exists) PersistConfig();
+        Translation.Culture = new CultureInfo(_appConfig.Language.ToLanguageCode());
     }
 
     private void PersistConfig()
@@ -136,6 +144,14 @@ internal class App
         }
 
         var clickEvent = new ClickEvent { TriggeredAt = DateTime.Now, DelayMillis = delayMillis, Accepted = accepted };
+        if (_lastAcceptedClickEvent is { IsDoubleClick: false }
+            && clickEvent.Accepted
+            && (clickEvent.TriggeredAt - _lastAcceptedClickEvent.TriggeredAt).TotalMilliseconds < 500)
+        {
+            clickEvent.IsDoubleClick = true;
+        }
+
+        if (clickEvent.Accepted) _lastAcceptedClickEvent = clickEvent;
         ClickEventTriggered.Invoke(this, clickEvent);
     }
 
