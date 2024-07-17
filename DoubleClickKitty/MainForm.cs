@@ -202,6 +202,7 @@ internal sealed class MainForm : Form
         statusStrip.Items.Add(_bilibiliButton);
         Controls.Add(statusStrip);
 
+        Icon = Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
         ClientSize = new Size(1280, 720);
         CenterToScreen();
 
