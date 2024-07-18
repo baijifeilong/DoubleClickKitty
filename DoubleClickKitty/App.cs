@@ -3,12 +3,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using PInvoke;
+using SharpHook;
+using SharpHook.Native;
+using LogLevel = NLog.LogLevel;
 
 namespace DoubleClickKitty;
 
@@ -23,6 +24,8 @@ internal class App
     private readonly AppConfig _appConfig;
     private readonly FileInfo _configFileInfo;
     private ClickEvent? _lastAcceptedClickEvent;
+    private readonly SimpleGlobalHook _hook;
+    private readonly EventSimulator _simulator;
 
     public int GetThresholdMillis()
     {
@@ -124,7 +127,13 @@ internal class App
         _logger.Info("Current config: {0}", _appConfig);
         if (_configFileInfo.Exists) PersistConfig();
         Translation.Culture = new CultureInfo(_appConfig.Language.ToLanguageCode());
+
+        _hook = new SimpleGlobalHook();
+        _simulator = new EventSimulator();
+        _hook.MousePressed += OnHookOnMousePressedOrReleased;
+        _hook.MouseReleased += OnHookOnMousePressedOrReleased;
     }
+
 
     private void PersistConfig()
     {
@@ -135,7 +144,7 @@ internal class App
     private void Run()
     {
         _logger.Info("Setting up hook...");
-        User32.SetWindowsHookEx(User32.WindowsHookType.WH_MOUSE_LL, MouseHookProc, 0, 0);
+        Task.Run(() => _hook.Run());
         _logger.Info("Hook set up");
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm());
@@ -165,15 +174,14 @@ internal class App
         }
 
         if (clickEvent.Accepted) _lastAcceptedClickEvent = clickEvent;
-        ClickEventTriggered.Invoke(this, clickEvent);
+        ClickEventTriggered.InvokeOnMainThread(this, clickEvent);
     }
 
     [SuppressMessage("ReSharper", "ConvertIfStatementToSwitchStatement")]
     [SuppressMessage("ReSharper", "InvertIf")]
-    private int MouseHookProc(int nCode, IntPtr wParam, IntPtr lParam)
+    private void OnHookOnMousePressedOrReleased(object? sender, MouseHookEventArgs args)
     {
-        if (nCode < 0) return User32.CallNextHookEx(0, nCode, wParam, lParam);
-        if (wParam == (int)User32.WindowMessage.WM_LBUTTONDOWN)
+        if (args.Data.Button == MouseButton.Button1 && args.RawEvent.Type == EventType.MousePressed)
         {
             var currentDateTime = DateTime.Now;
             var deltaMillis = (int)(currentDateTime - _lastAcceptedAt).TotalMilliseconds;
@@ -182,42 +190,29 @@ internal class App
                 _logger.Info($"Left mouse down, rejected with milliseconds: {deltaMillis}");
                 _ignoring = true;
                 TriggerClickEvent(deltaMillis, false);
-                return 1;
+                args.SuppressEvent = true;
             }
 
             _lastAcceptedAt = currentDateTime;
             _logger.Info($"Left mouse down, accepted: {deltaMillis}");
             TriggerClickEvent(deltaMillis, true);
         }
-        else if (wParam == (int)User32.WindowMessage.WM_LBUTTONUP)
+        else if (args.Data.Button == MouseButton.Button1 && args.RawEvent.Type == EventType.MouseReleased && _ignoring)
         {
-            if (_ignoring)
-            {
-                _ignoring = false;
-                return 1;
-            }
+            _ignoring = false;
+            args.SuppressEvent = true;
         }
-        else if (wParam == (int)User32.WindowMessage.WM_MBUTTONDOWN && _appConfig.MiddleAsLeft)
+        else if (args.Data.Button == MouseButton.Button3 && args.RawEvent.Type == EventType.MousePressed
+                                                         && _appConfig.MiddleAsLeft)
         {
-            Task.Run(() =>
-            {
-                var input = new User32.INPUT { type = User32.InputType.INPUT_MOUSE };
-                input.Inputs.mi.dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTDOWN;
-                User32.SendInput(1, new[] { input }, Marshal.SizeOf<User32.INPUT>());
-            });
-            return 1;
+            Task.Run(() => { _simulator.SimulateMousePress(MouseButton.Button1); });
+            args.SuppressEvent = true;
         }
-        else if (wParam == (int)User32.WindowMessage.WM_MBUTTONUP && _appConfig.MiddleAsLeft)
+        else if (args.Data.Button == MouseButton.Button3 && args.RawEvent.Type == EventType.KeyReleased
+                                                         && _appConfig.MiddleAsLeft)
         {
-            Task.Run(() =>
-            {
-                var input = new User32.INPUT { type = User32.InputType.INPUT_MOUSE };
-                input.Inputs.mi.dwFlags = User32.MOUSEEVENTF.MOUSEEVENTF_LEFTUP;
-                User32.SendInput(1, new[] { input }, Marshal.SizeOf<User32.INPUT>());
-            });
-            return 1;
+            Task.Run(() => { _simulator.SimulateMouseRelease(MouseButton.Button1); });
+            args.SuppressEvent = true;
         }
-
-        return User32.CallNextHookEx(0, nCode, wParam, lParam);
     }
 }
