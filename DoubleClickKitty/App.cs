@@ -208,7 +208,7 @@ internal class App
             Task.Run(() => { _simulator.SimulateMousePress(MouseButton.Button1); });
             args.SuppressEvent = true;
         }
-        else if (args.Data.Button == MouseButton.Button3 && args.RawEvent.Type == EventType.KeyReleased
+        else if (args.Data.Button == MouseButton.Button3 && args.RawEvent.Type == EventType.MouseReleased
                                                          && _appConfig.MiddleAsLeft)
         {
             Task.Run(() => { _simulator.SimulateMouseRelease(MouseButton.Button1); });
