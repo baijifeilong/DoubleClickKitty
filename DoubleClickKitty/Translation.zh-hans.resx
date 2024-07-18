@@ -24,7 +24,7 @@
         <value>阈值: {0:000}ms</value>
     </data>
     <data name="Title_Application" xml:space="preserve">
-        <value>双击猫</value>
+        <value>双击猫 (DoubleClickKitty)</value>
     </data>
     <data name="Button_Reset" xml:space="preserve">
         <value>重置</value>

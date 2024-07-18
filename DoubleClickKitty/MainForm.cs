@@ -189,14 +189,14 @@ internal sealed class MainForm : Form
         _githubButton = new ToolStripButton { Alignment = ToolStripItemAlignment.Right };
         _githubButton.Click += delegate
         {
-            Process.Start(new ProcessStartInfo("https://github.com/baijifeilong/SpireTimeMachine")
+            Process.Start(new ProcessStartInfo("https://github.com/baijifeilong/DoubleClickKitty")
                 { UseShellExecute = true });
         };
         statusStrip.Items.Add(_githubButton);
         _bilibiliButton = new ToolStripButton { Alignment = ToolStripItemAlignment.Right };
         _bilibiliButton.Click += delegate
         {
-            Process.Start(new ProcessStartInfo("https://www.bilibili.com/video/BV1ab421n7YH/")
+            Process.Start(new ProcessStartInfo("https://www.bilibili.com/video/BV1yS421R7S2/")
                 { UseShellExecute = true });
         };
         statusStrip.Items.Add(_bilibiliButton);
