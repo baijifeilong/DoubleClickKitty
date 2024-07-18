@@ -192,10 +192,12 @@ internal class App
                 TriggerClickEvent(deltaMillis, false);
                 args.SuppressEvent = true;
             }
-
-            _lastAcceptedAt = currentDateTime;
-            _logger.Info($"Left mouse down, accepted: {deltaMillis}");
-            TriggerClickEvent(deltaMillis, true);
+            else
+            {
+                _lastAcceptedAt = currentDateTime;
+                _logger.Info($"Left mouse down, accepted: {deltaMillis}");
+                TriggerClickEvent(deltaMillis, true);
+            }
         }
         else if (args.Data.Button == MouseButton.Button1 && args.RawEvent.Type == EventType.MouseReleased && _ignoring)
         {
